@@ -72,6 +72,14 @@
             (shell-command-to-string (format "%s -h" arg)))
        man-page))))
 
+(defun company-shell--meta-string (arg)
+  (let ((meta (-> (format "whatis %s" arg)
+                  (shell-command-to-string)
+                  (split-string "\n")
+                  (car))))
+    (when (not (string-equal meta (format "%s: nothing appropriate." arg)))
+      meta)))
+
 (defun company-shell (command &optional arg &rest ignored)
   "Company mode backend for binaries found on the $PATH and fish shell functions."
   (interactive (list 'interactive))
@@ -84,7 +92,7 @@
     (no-cache    nil)
     (annotation  (get-text-property 0 'origin arg))
     (doc-buffer  (company-shell--doc-buffer arg))
-    (meta        (car (split-string (shell-command-to-string (format "whatis %s" arg)) "\n")))
+    (meta        (company-shell--meta-string arg))
     (candidates  (cl-remove-if-not
                   (lambda (candidate) (string-prefix-p arg candidate))
                   (company-shell--fetch-candidates)))))
