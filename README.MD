@@ -44,6 +44,6 @@ Add `company-shell` to your `company-backends`:
 
 ## Future plans & maybes
 
-* include origin as annotation
+* better documentation
 * improve doc string search
 * Better formatting for meta strings

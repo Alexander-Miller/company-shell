@@ -1,4 +1,4 @@
-;;; company-shell.el --- Company mode backend for shell functions -*-
+;;; company-shell.el --- Company mode backend for shell functions -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2015 Alexander Miller
 
@@ -46,12 +46,19 @@
   company-shell--cache)
 
 (defun company-shell--fetch-path-functions ()
-  (-mapcat 'directory-files
-           (-> (getenv "PATH") (split-string ":"))))
+  (-mapcat
+   (lambda (dir)
+     (-map
+      (lambda (f) (propertize f 'origin dir))
+      (directory-files dir)))
+   (-> (getenv "PATH") (split-string ":"))))
 
 (defun company-shell--fetch-fish-functions ()
   (when (executable-find "fish")
-    (split-string (shell-command-to-string "functions") "\n")))
+    (-->
+     (shell-command-to-string "fish -c functions")
+     (split-string it "\n")
+     (-map (lambda (f) (propertize f 'origin "Fish Function")) it))))
 
 (defun company-shell--doc-buffer (arg)
   (company-doc-buffer
@@ -75,10 +82,11 @@
     (duplicates  t)
     (ignore-case nil)
     (no-cache    nil)
+    (annotation  (get-text-property 0 'origin arg))
     (doc-buffer  (company-shell--doc-buffer arg))
     (meta        (car (split-string (shell-command-to-string (format "whatis %s" arg)) "\n")))
-    (candidates (cl-remove-if-not
-                   (lambda (candidate) (string-prefix-p arg candidate))
-                   (company-shell--fetch-candidates)))))
+    (candidates  (cl-remove-if-not
+                  (lambda (candidate) (string-prefix-p arg candidate))
+                  (company-shell--fetch-candidates)))))
 
 (provide 'company-shell)
