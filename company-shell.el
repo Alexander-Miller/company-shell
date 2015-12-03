@@ -32,14 +32,26 @@
 (defvar company-shell--cache nil
   "Cache of all possible completions. Invoke `company-shell-create-completion-list' to rebuild manually.")
 
+(defvar company-shell-delete-duplicates t
+  "If non-nil the list of completions will be purged of duplicates. Duplicates with this context means any two
+string-equal entries, regardless their where they have been found. This would prevent a completion candidate
+appearing twice because it is found in both /usr/bin/ and /usr/local/bin.
+
+Changing this variable requires the cache to be rebuilt via `company-shell-create-completion-list' for the changes
+to take effect.")
+
 (defun company-shell-create-completion-list ()
   "Builds the cache of all completions found on the $PATH and optionally all fish functions."
   (interactive)
-  (setq company-shell--cache
-        (sort (append
-               (company-shell--fetch-fish-functions)
-               (company-shell--fetch-path-functions))
-              'string-lessp)))
+  (let ((completions (append
+                      (company-shell--fetch-fish-functions)
+                      (company-shell--fetch-path-functions))))
+    (setq company-shell--cache
+          (sort
+           (if company-shell-delete-duplicates
+               (delete-dups completions)
+             completions)
+           'string-lessp))))
 
 (defun company-shell--fetch-candidates ()
   (when (null company-shell--cache) (company-shell-create-completion-list))
@@ -87,7 +99,7 @@
     (interactive (company-begin-backend 'company-shell))
     (prefix      (company-grab-symbol))
     (sorted      t)
-    (duplicates  t)
+    (duplicates  nil)
     (ignore-case nil)
     (no-cache    nil)
     (annotation  (get-text-property 0 'origin arg))
