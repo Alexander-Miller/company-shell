@@ -40,6 +40,11 @@ appearing twice because it is found in both /usr/bin/ and /usr/local/bin.
 Changing this variable requires the cache to be rebuilt via `company-shell-create-completion-list' for the changes
 to take effect.")
 
+(defvar company-shell-max-man-page-size nil
+  "Maximal size of a doc string in characters. Can be used to increase performance in conjunction
+with `company-quickhelp', as large man pages may cause severe delay while only the first part will
+ever be shown anyway. Leaving this set to nil means no size restrictions.")
+
 (defun company-shell-create-completion-list ()
   "Builds the cache of all completions found on the $PATH and optionally all fish functions."
   (interactive)
@@ -74,15 +79,20 @@ to take effect.")
 
 (defun company-shell--doc-buffer (arg)
   (company-doc-buffer
-   (let ((man-page (shell-command-to-string (format "man %s" arg))))
-     (if (or
-          (null man-page)
-          (string-empty-p man-page)
-          (string-prefix-p "No manual entry" man-page))
-         (or
-            (shell-command-to-string (format "%s --help" arg))
-            (shell-command-to-string (format "%s -h" arg)))
-       man-page))))
+   (let* ((origin    (get-text-property 0 'origin arg))
+          (full-path (if (string-equal origin "Fish Function")
+                         arg
+                       (format "%s/%s" origin arg)))
+          (man-page  (shell-command-to-string (format "man %s" full-path)))
+          (doc-txt   (append (if (or
+                                  (null man-page)
+                                  (string-empty-p man-page)
+                                  (string-prefix-p "No manual entry" man-page))
+                                 (or
+                                  (shell-command-to-string (format "%s --help" full-path))
+                                  (shell-command-to-string (format "%s -h" full-path)))
+                               man-page))))
+     (substring doc-txt 0 (min (length doc-txt) company-shell-max-man-page-size)))))
 
 (defun company-shell--meta-string (arg)
   (let ((meta (-> (format "whatis %s" arg)
