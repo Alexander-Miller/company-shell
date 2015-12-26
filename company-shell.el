@@ -63,7 +63,10 @@ to take effect.")
      (-map
       (lambda (f) (propertize f 'origin dir))
       (directory-files dir)))
-   (-> (getenv "PATH") (split-string ":"))))
+   (-->
+    (getenv "PATH")
+    (split-string it ":")
+    (-filter 'file-readable-p it))))
 
 (defun company-shell--fetch-fish-functions ()
   (when (executable-find "fish")
