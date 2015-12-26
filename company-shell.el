@@ -40,6 +40,10 @@ appearing twice because it is found in both /usr/bin/ and /usr/local/bin.
 Changing this variable requires the cache to be rebuilt via `company-shell-create-completion-list' for the changes
 to take effect.")
 
+(defvar company-shell-modes '(sh-mode fish-mode)
+  "List of major modes where `company-shell' will be providing completions if it is part of `company-backends'.
+All modes not on this list will be ignored. Set value to nil to enable company-mode regardless of current major-mode.")
+
 (defun company-shell-create-completion-list ()
   "Builds the cache of all completions found on the $PATH and optionally all fish functions."
   (interactive)
@@ -75,6 +79,12 @@ to take effect.")
      (split-string it "\n")
      (-map (lambda (f) (propertize f 'origin "Fish Function")) it))))
 
+(defun company-shell--prefix ()
+  (if (or (null company-shell-modes)
+          (-contains? company-shell-modes major-mode))
+      (company-grab-symbol)
+    nil))
+
 (defun company-shell--doc-buffer (arg)
   (company-doc-buffer
    (let ((man-page (shell-command-to-string (format "man %s" arg))))
@@ -100,7 +110,7 @@ to take effect.")
   (interactive (list 'interactive))
   (cl-case command
     (interactive (company-begin-backend 'company-shell))
-    (prefix      (company-grab-symbol))
+    (prefix      (company-shell--prefix))
     (sorted      t)
     (duplicates  nil)
     (ignore-case nil)
