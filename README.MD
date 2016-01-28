@@ -1,7 +1,9 @@
 
 # Company Shell
 
-company mode completion backend for your shell functions.
+company mode completion backend for your shell functions:
+
+![](./screenshot.png)
 
 ## Features
 
