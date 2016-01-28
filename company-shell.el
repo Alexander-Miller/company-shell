@@ -30,19 +30,18 @@
 (require 'cl-lib)
 
 (defvar company-shell--cache nil
-  "Cache of all possible completions. Invoke `company-shell-create-completion-list' to rebuild manually.")
+  "Cache of all possible completions. Automatically built when nil. Invoke `company-shell-create-completion-list' to rebuild manually.")
 
 (defvar company-shell-delete-duplicates t
-  "If non-nil the list of completions will be purged of duplicates. Duplicates with this context means any two
+  "If non-nil the list of completions will be purged of duplicates. Duplicates in this context means any two
 string-equal entries, regardless where they have been found. This would prevent a completion candidate
 appearing twice because it is found in both /usr/bin/ and /usr/local/bin.
 
-Changing this variable requires the cache to be rebuilt via `company-shell-create-completion-list' for the changes
-to take effect.")
+For a change to this variable to take effect the cache needs to be rebuilt via `company-shell-create-completion-list'.")
 
 (defvar company-shell-modes '(sh-mode fish-mode)
   "List of major modes where `company-shell' will be providing completions if it is part of `company-backends'.
-All modes not on this list will be ignored. Set value to nil to enable company-mode regardless of current major-mode.")
+All modes not on this list will be ignored. Set value to nil to enable company-shell regardless of current major-mode.")
 
 (defun company-shell-create-completion-list ()
   "Builds the cache of all completions found on the $PATH and optionally all fish functions."
