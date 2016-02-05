@@ -45,7 +45,7 @@ Add `company-shell` to your `company-backends`:
 If non-nil the list of completions will be purged of duplicates. Duplicates in this context means any two
 string-equal entries, regardless where they have been found. This would prevent a completion candidate
 appearing twice because it is found in both /usr/bin/ and /usr/local/bin.
-For a change to this variable to take effect the cache needs to be rebuilt via `company-shell-create-completion-list'.
+For a change to this variable to take effect the cache needs to be rebuilt via `company-shell-create-completion-list`.
 
 * company-shell-modes '(sh-mode fish-mode):
 
