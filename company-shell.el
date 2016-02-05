@@ -1,8 +1,11 @@
-;;; company-shell.el --- Company mode backend for shell functions -*- lexical-binding: t -*-
+;;; company-shell.el --- Company mode backend for shell functions
 
 ;; Copyright (C) 2015 Alexander Miller
 
 ;; Author: Alexander Miller <alexanderm@web.de>
+;; Package-Requires: ((company) (dash) (cl-lib))
+;; Homepage: https://github.com/Alexander-Miller/company-shell
+;; Version: 1.0
 ;; Keywords: company, shell
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -124,3 +127,4 @@ All modes not on this list will be ignored. Set value to nil to enable company-s
                   (company-shell--fetch-candidates)))))
 
 (provide 'company-shell)
+;;; company-shell.el ends here
