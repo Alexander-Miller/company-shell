@@ -43,6 +43,7 @@ For a change to this variable to take effect the cache needs to be rebuilt via `
   "List of major modes where `company-shell' will be providing completions if it is part of `company-backends'.
 All modes not on this list will be ignored. Set value to nil to enable company-shell regardless of current major-mode.")
 
+;;;###autoload
 (defun company-shell-create-completion-list ()
   "Builds the cache of all completions found on the $PATH and optionally all fish functions."
   (interactive)
@@ -104,6 +105,7 @@ All modes not on this list will be ignored. Set value to nil to enable company-s
     (when (not (string-equal meta (format "%s: nothing appropriate." arg)))
       meta)))
 
+;;;###autoload
 (defun company-shell (command &optional arg &rest ignored)
   "Company mode backend for binaries found on the $PATH and fish shell functions."
   (interactive (list 'interactive))
