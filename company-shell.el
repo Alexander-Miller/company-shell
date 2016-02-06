@@ -3,7 +3,7 @@
 ;; Copyright (C) 2015 Alexander Miller
 
 ;; Author: Alexander Miller <alexanderm@web.de>
-;; Package-Requires: ((company) (dash) (cl-lib))
+;; Package-Requires: ((company "0.8.12") (dash "2.12.0") (cl-lib "0.5"))
 ;; Homepage: https://github.com/Alexander-Miller/company-shell
 ;; Version: 1.0
 ;; Keywords: company, shell
