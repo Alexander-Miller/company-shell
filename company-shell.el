@@ -70,10 +70,7 @@ All modes not on this list will be ignored. Set value to nil to enable company-s
      (-map
       (lambda (f) (propertize f 'origin dir))
       (directory-files dir)))
-   (-->
-    (getenv "PATH")
-    (split-string it ":")
-    (-filter 'file-readable-p it))))
+   (-filter 'file-readable-p exec-path)))
 
 (defun company-shell--fetch-fish-functions ()
   (when (executable-find "fish")
