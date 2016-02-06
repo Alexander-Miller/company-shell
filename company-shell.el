@@ -93,7 +93,7 @@ All modes not on this list will be ignored. Set value to nil to enable company-s
    (let ((man-page (shell-command-to-string (format "man %s" arg))))
      (if (or
           (null man-page)
-          (string-empty-p man-page)
+          (string= man-page "")
           (string-prefix-p "No manual entry" man-page))
          (or
           (shell-command-to-string (format "%s --help" arg))
