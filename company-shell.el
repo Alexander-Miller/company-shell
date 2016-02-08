@@ -103,7 +103,7 @@ All modes not on this list will be ignored. Set value to nil to enable company-s
                   (split-string "\n")
                   (car))))
     (when (not (string-equal meta (format "%s: nothing appropriate." arg)))
-      meta)))
+      (second (split-string meta " - ")))))
 
 ;;;###autoload
 (defun company-shell (command &optional arg &rest ignored)

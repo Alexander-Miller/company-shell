@@ -60,5 +60,4 @@ All modes not on this list will be ignored. Set value to nil to enable company-s
 
 ## Future plans & maybes
 
-* Better formatting for meta strings
 * customize group interface
