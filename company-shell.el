@@ -84,8 +84,8 @@ All modes not on this list will be ignored. Set value to nil to enable company-f
 
 (defun company-shell--prefix (mode-list)
   (when (or (null mode-list)
-          (-contains? mode-list major-mode))
-      (company-grab-symbol)))
+            (-contains? mode-list major-mode))
+    (company-grab-symbol)))
 
 (defun company-shell--doc-buffer (arg)
   (company-doc-buffer
