@@ -43,7 +43,7 @@
 string-equal entries, regardless where they have been found. This would prevent a completion candidate
 appearing twice because it is found in both /usr/bin/ and /usr/local/bin.
 
-For a change to this variable to take effect the cache needs to be rebuilt via `company-shell-create-completion-list'.")
+For a change to this variable to take effect the cache needs to be rebuilt via `company-shell-rebuild-cache'.")
 
 (defvar company-shell-modes '(sh-mode fish-mode)
   "List of major modes where `company-shell' will be providing completions if it is part of `company-backends'.
