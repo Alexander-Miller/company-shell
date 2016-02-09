@@ -54,11 +54,11 @@ All modes not on this list will be ignored. Set value to nil to enable company-s
 All modes not on this list will be ignored. Set value to nil to enable company-fish-shell regardless of current major-mode.")
 
 (defun company-shell--fetch-candidates ()
-  (when (null company-shell--cache) (company-shell--build-cache))
+  (unless company-shell--cache (company-shell--build-cache))
   company-shell--cache)
 
 (defun company-shell--fetch-fish-candidates ()
-  (when (null company-shell--fish-cache) (company-shell--build-fish-cache))
+  (unless company-shell--fish-cache (company-shell--build-fish-cache))
   company-shell--fish-cache)
 
 (defun company-shell--build-cache ()
