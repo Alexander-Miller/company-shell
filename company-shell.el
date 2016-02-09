@@ -77,10 +77,9 @@ All modes not on this list will be ignored. Set value to nil to enable company-f
 (defun company-shell--build-fish-cache ()
   (when (executable-find "fish")
     (setq company-shell--fish-cache
-          (->
-           (shell-command-to-string "fish -c \"functions -a\"")
-           (split-string "\n")
-           (sort 'string-lessp)))))
+          (-> (shell-command-to-string "fish -c \"functions -a\"")
+              (split-string "\n")
+              (sort 'string-lessp)))))
 
 (defun company-shell--prefix (mode-list)
   (when (or (null mode-list)
@@ -98,12 +97,12 @@ All modes not on this list will be ignored. Set value to nil to enable company-f
        man-page))))
 
 (defun company-shell--meta-string (arg)
-  (let ((meta (-> (format "whatis %s" arg)
-                  (shell-command-to-string)
-                  (split-string "\n")
-                  (car))))
-    (when (not (string-equal meta (format "%s: nothing appropriate." arg)))
-      (second (split-string meta " - ")))))
+  (-some-> (format "whatis %s" arg)
+           (shell-command-to-string)
+           (split-string "\n")
+           (first)
+           (split-string " - ")
+           (second)))
 
 ;;;###autoload
 (defun company-shell-rebuild-cache ()
