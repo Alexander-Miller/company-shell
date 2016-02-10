@@ -45,11 +45,11 @@ appearing twice because it is found in both /usr/bin/ and /usr/local/bin.
 
 For a change to this variable to take effect the cache needs to be rebuilt via `company-shell-rebuild-cache'.")
 
-(defvar company-shell-modes '(sh-mode fish-mode)
+(defvar company-shell-modes '(sh-mode fish-mode shell-mode eshell-mode)
   "List of major modes where `company-shell' will be providing completions if it is part of `company-backends'.
 All modes not on this list will be ignored. Set value to nil to enable company-shell regardless of current major-mode.")
 
-(defvar company-fish-shell-modes '(fish-mode)
+(defvar company-fish-shell-modes '(fish-mode shell-mode)
   "List of major modes where `company-fish-shell' will be providing completions if it is part of `company-backends'.
 All modes not on this list will be ignored. Set value to nil to enable company-fish-shell regardless of current major-mode.")
 
