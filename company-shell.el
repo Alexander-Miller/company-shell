@@ -123,7 +123,7 @@ it in the understanding that you do this AT YOUR OWN RISK.")
     (shell-command-to-string
      (format "echo \"timeout 1 %s --help\" | %s --restricted"
              arg
-             (s-trim (shell-command-to-string "which sh"))))))
+             (string-trim (shell-command-to-string "which sh"))))))
 
 (defun company-shell--meta-string (arg)
   (-some-> (format "whatis %s" arg)
