@@ -12,7 +12,7 @@ company mode completion backends for your shell functions:
 `company-shell` offers 2 backends for 2 different sources:
 
 * `company-shell` - providing completions for binaries that are found on your `$PATH`
-* `COMPANY-fish-shell` - providing completions for fish-shell's functions, both builtin as well as user-defined
+* `company-fish-shell` - providing completions for fish-shell's functions, both builtin as well as user-defined
 
 ### Doc Strings
 
