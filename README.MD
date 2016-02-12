@@ -48,12 +48,12 @@ string-equal entries, regardless where they have been found. This would prevent 
 appearing twice because it is found in both /usr/bin/ and /usr/local/bin.
 For a change to this variable to take effect the cache needs to be rebuilt via `company-shell-rebuild-cache`.
 
-* `company-shell-modes` (default value: sh-mode fish-mode)
+* `company-shell-modes` (default value: sh-mode fish-mode shell-mode eshell-mode)
 
 List of major modes where `company-shell` will be providing completions if it is part of `company-backends`.
 All modes not on this list will be ignored. Set value to nil to enable `company-shell` regardless of current major-mode.
 
-* `company-fish-shell-modes` (default value: fish-mode)
+* `company-fish-shell-modes` (default value: fish-mode shell-mode)
 
 List of major modes where `company-fish-shell` will be providing completions if it is part of `company-backends`.
 All modes not on this list will be ignored. Set value to nil to enable `company-shell` regardless of current major-mode.
