@@ -53,6 +53,28 @@ All modes not on this list will be ignored. Set value to nil to enable company-s
   "List of major modes where `company-fish-shell' will be providing completions if it is part of `company-backends'.
 All modes not on this list will be ignored. Set value to nil to enable company-fish-shell regardless of current major-mode.")
 
+(defvar company-shell-use-help-arg nil
+  "SETTING THIS TO t IS POTENTIALLY UNSAFE.
+
+If non-nil company-(fish)-shell will try and find a doc-string by running `arg --help'
+if `man arg' did not produce any valid results. This is not completely safe since
+company-shell does not and can not know whether it is safe to run a command in this
+fashion. Some applications may simply ignore or misinterpret the command flag, with
+unpredictable results. Usually this just means that instead of any actual documentation
+you'll see an error message telling you the program doesn't know what to do with the
+--help arg or that it was started with invalid input. In rare cases a program may simple
+ignore the --help arg and directly spawn a GUI like xfce4-notes-settings does.
+
+To mitigate any such issues company-shell will run the --help attempt on a timer of
+1 second. This is more than enough to fetch the doc output if it is available, but will
+quickly close any process that may accidentally have been spawned. In addition the command
+will run in a restricted shell (via $(which sh) --restricted) to further avoid any unwanted
+side effects.
+
+Despite these precautions company-shell will nonetheless need to sometimes run completely unknown
+binaries, which is why this option is turned off by default. You need to consciously enable
+it in the understanding that you do this AT YOUR OWN RISK.")
+
 (defun company-shell--fetch-candidates ()
   (unless company-shell--cache (company-shell--build-cache))
   company-shell--cache)
@@ -93,8 +115,15 @@ All modes not on this list will be ignored. Set value to nil to enable company-f
           (null man-page)
           (string= man-page "")
           (string-prefix-p "No manual entry" man-page))
-         (shell-command-to-string (format "%s --help" arg))
+         (company-shell--help-page arg)
        man-page))))
+
+(defun company-shell--help-page (arg)
+  (when company-shell-use-help-arg
+    (shell-command-to-string
+     (format "echo \"timeout 1 %s --help\" | %s --restricted"
+             arg
+             (s-trim (shell-command-to-string "which sh"))))))
 
 (defun company-shell--meta-string (arg)
   (-some-> (format "whatis %s" arg)
