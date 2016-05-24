@@ -31,6 +31,7 @@
 (require 'company)
 (require 'dash)
 (require 'cl-lib)
+(require 'subr-x)
 
 (defvar company-shell--cache nil
   "Cache of all possible $PATH completions. Automatically built when nil. Invoke `company-shell-rebuild-cache' to rebuild manually.")
@@ -87,7 +88,9 @@ it in the understanding that you do this AT YOUR OWN RISK.")
   (let ((completions (-mapcat
                       (lambda (dir)
                         (-map
-                         (lambda (file) (propertize file 'origin dir))
+                         (lambda (file)
+                           (propertize (file-name-sans-extension file)
+                                       'origin dir))
                          (directory-files dir)))
                       (-filter 'file-readable-p exec-path))))
     (setq company-shell--cache (sort
