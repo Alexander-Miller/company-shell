@@ -132,9 +132,9 @@ it in the understanding that you do this AT YOUR OWN RISK.")
   (-some-> (format "whatis %s" arg)
            (shell-command-to-string)
            (split-string "\n")
-           (first)
+           (cl-first)
            (split-string " - ")
-           (second)))
+           (cl-second)))
 
 ;;;###autoload
 (defun company-shell-rebuild-cache ()
