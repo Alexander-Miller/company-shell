@@ -5,7 +5,7 @@
 ;; Author: Alexander Miller <alexanderm@web.de>
 ;; Package-Requires: ((company "0.8.12") (dash "2.12.0") (cl-lib "0.5"))
 ;; Homepage: https://github.com/Alexander-Miller/company-shell
-;; Version: 1.0
+;; Version: 1.1
 ;; Keywords: company, shell
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -102,9 +102,14 @@ it in the understanding that you do this AT YOUR OWN RISK.")
 (defun company-shell--build-fish-cache ()
   (when (executable-find "fish")
     (setq company-shell--fish-cache
-          (-> (shell-command-to-string "fish -c \"functions -a\"")
-              (split-string "\n")
-              (sort 'string-lessp)))))
+          (append
+           (-> (shell-command-to-string "fish -c \"functions -a\"")
+               (split-string "\n")
+               (sort 'string-lessp))
+           (-> "fish -c \"builtin -n\""
+               (shell-command-to-string)
+               (split-string "\n")
+               (sort #'string-lessp))))))
 
 (defun company-shell--prefix (mode-list)
   (when (or (null mode-list)
