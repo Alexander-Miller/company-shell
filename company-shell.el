@@ -5,7 +5,7 @@
 ;; Author: Alexander Miller <alexanderm@web.de>
 ;; Package-Requires: ((company "0.8.12") (dash "2.12.0") (cl-lib "0.5"))
 ;; Homepage: https://github.com/Alexander-Miller/company-shell
-;; Version: 1.1
+;; Version: 1.2
 ;; Keywords: company, shell
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -117,14 +117,24 @@ it in the understanding that you do this AT YOUR OWN RISK.")
     (company-grab-symbol)))
 
 (defun company-shell--doc-buffer (arg)
-  (company-doc-buffer
-   (let ((man-page (shell-command-to-string (format "man %s" arg))))
-     (if (or
-          (null man-page)
-          (string= man-page "")
-          (string-prefix-p "No manual entry" man-page))
-         (company-shell--help-page arg)
-       man-page))))
+  (if (company-shell--man-page-exists? arg)
+      (let* ((inhibit-message t)
+             (mb  (save-window-excursion (man arg))))
+        (while (get-buffer-process mb)
+          (sit-for 0.2))
+        (let ((txt (with-current-buffer mb (buffer-string))))
+          (kill-buffer mb)
+          (company-doc-buffer txt)))
+    (company-doc-buffer (company-shell--help-page arg))))
+
+(defun company-shell--man-page-exists? (arg)
+  "Check if a man page entry exists for `ARG'."
+  (eq 0 (cl-first
+         (with-temp-buffer
+           (list
+            (call-process "man" nil (current-buffer) nil arg)
+            (buffer-string))))))
+
 
 (defun company-shell--help-page (arg)
   (when company-shell-use-help-arg
