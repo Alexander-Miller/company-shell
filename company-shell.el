@@ -102,14 +102,13 @@ it in the understanding that you do this AT YOUR OWN RISK.")
 (defun company-shell--build-fish-cache ()
   (when (executable-find "fish")
     (setq company-shell--fish-cache
-          (append
-           (-> (shell-command-to-string "fish -c \"functions -a\"")
-               (split-string "\n")
-               (sort 'string-lessp))
-           (-> "fish -c \"builtin -n\""
-               (shell-command-to-string)
-               (split-string "\n")
-               (sort #'string-lessp))))))
+          (-flatten (--map
+                     (-> it
+                         (format "fish -c \"%s\"")
+                         (shell-command-to-string)
+                         (split-string "\n")
+                         (sort #'string-lessp))
+                     '("functions -a" "builtin -n"))))))
 
 (defun company-shell--prefix (mode-list)
   (when (or (null mode-list)
