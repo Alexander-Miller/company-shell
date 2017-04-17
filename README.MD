@@ -61,6 +61,11 @@ All modes not on this list will be ignored. Set value to nil to enable `company-
 List of major modes where `company-fish-shell` will be providing completions if it is part of `company-backends`.
 All modes not on this list will be ignored. Set value to nil to enable `company-shell` regardless of current major-mode.
 
+* `company-shell-clean-manpage` (default value: nil)
+
+When t clean the man-page with `Man-cleanup-manpage'. This is only needed when you have the problem of your man
+pages being filled with control characters (you'll know it when you see it).
+
 * `company-shell-use-help-arg` (default value: nil)
 
 SETTING THIS TO t IS POTENTIALLY UNSAFE.

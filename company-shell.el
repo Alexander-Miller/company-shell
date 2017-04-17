@@ -5,7 +5,7 @@
 ;; Author: Alexander Miller <alexanderm@web.de>
 ;; Package-Requires: ((company "0.8.12") (dash "2.12.0") (cl-lib "0.5"))
 ;; Homepage: https://github.com/Alexander-Miller/company-shell
-;; Version: 1.0
+;; Version: 1.1
 ;; Keywords: company, shell, auto-completion
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -32,6 +32,8 @@
 (require 'dash)
 (require 'cl-lib)
 (require 'subr-x)
+
+(autoload 'Man-cleanup-manpage "man")
 
 (defgroup company-shell nil
   "Company mode backend for shell functions."
@@ -70,6 +72,13 @@ value to nil to enable company-shell regardless of current major-mode."
 if it is part of `company-backends'. All modes not on this list will be ignored.
 Set value to nil to enable company-fish-shell regardless of current major-mode."
   :type 'list
+  :group 'company-shell)
+
+(defcustom company-shell-clean-manpage nil
+  "When t clean the man-page with `Man-cleanup-manpage'.
+This is only needed when you have the problem of your man pages being filled
+with control characters (you'll know it when you see it)."
+  :type 'boolean
   :group 'company-shell)
 
 (defcustom company-shell-use-help-arg nil
@@ -138,14 +147,16 @@ YOUR OWN RISK."
     (company-grab-symbol)))
 
 (defun company-shell--doc-buffer (arg)
-  (company-doc-buffer
-   (let ((man-page (shell-command-to-string (format "man %s" arg))))
-     (if (or
-          (null man-page)
-          (string= man-page "")
-          (string-prefix-p "No manual entry" man-page))
-         (company-shell--help-page arg)
-       man-page))))
+  (let* ((man-text (shell-command-to-string (format "man %s" arg)))
+         (buf-text (if (or (null man-text)
+                           (string= man-text "")
+                           (string-prefix-p "No manual entry" man-text))
+                       (company-shell--help-page arg)
+                     man-text))
+         (doc-buf (company-doc-buffer buf-text)))
+    (when company-shell-clean-manpage
+      (with-current-buffer doc-buf (Man-cleanup-manpage)))
+    doc-buf))
 
 (defun company-shell--help-page (arg)
   (when company-shell-use-help-arg
