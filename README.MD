@@ -89,7 +89,3 @@ it in the understanding that you do this AT YOUR OWN RISK.
 * company
 * cl-lib
 * dash
-
-## Future plans & maybes
-
-* customize group interface

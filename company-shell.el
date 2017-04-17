@@ -1,12 +1,12 @@
 ;;; company-shell.el --- Company mode backend for shell functions
 
-;; Copyright (C) 2015 Alexander Miller
+;; Copyright (C) 2017 Alexander Miller
 
 ;; Author: Alexander Miller <alexanderm@web.de>
 ;; Package-Requires: ((company "0.8.12") (dash "2.12.0") (cl-lib "0.5"))
 ;; Homepage: https://github.com/Alexander-Miller/company-shell
-;; Version: 1.1
-;; Keywords: company, shell
+;; Version: 1.0
+;; Keywords: company, shell, auto-completion
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -33,6 +33,12 @@
 (require 'cl-lib)
 (require 'subr-x)
 
+(defgroup company-shell nil
+  "Company mode backend for shell functions."
+  :group 'company
+  :prefix "company-shell-"
+  :link '(url-link :tag "Repository" "https://github.com/Alexander-Miller/company-shell"))
+
 (defvar company-shell--cache nil
   "Cache of all possible $PATH completions. Automatically built when nil.
  Invoke `company-shell-rebuild-cache' to rebuild manually.")
@@ -41,26 +47,32 @@
   "Cache of all possible fish shell function completions. Automatically
 built when nil. Invoke `company-shell-rebuild-cache' to rebuild manually.")
 
-(defvar company-shell-delete-duplicates t
+(defcustom company-shell-delete-duplicates t
   "If non-nil the list of completions will be purged of duplicates. Duplicates
 in this context means any two string-equal entries, regardless where they have
 been found. This would prevent a completion candidate appearing twice because
 it is found in both /usr/bin/ and /usr/local/bin.
 
 For a change to this variable to take effect the cache needs to be rebuilt
-via `company-shell-rebuild-cache'.")
+via `company-shell-rebuild-cache'."
+  :type 'boolean
+  :group 'company-shell)
 
-(defvar company-shell-modes '(sh-mode fish-mode shell-mode eshell-mode)
+(defcustom company-shell-modes '(sh-mode fish-mode shell-mode eshell-mode)
   "List of major modes where `company-shell' will be providing completions if it
 is part of `company-backends'. All modes not on this list will be ignored. Set
-value to nil to enable company-shell regardless of current major-mode.")
+value to nil to enable company-shell regardless of current major-mode."
+  :type 'list
+  :group 'company-shell)
 
-(defvar company-fish-shell-modes '(fish-mode shell-mode)
+(defcustom company-fish-shell-modes '(fish-mode shell-mode)
   "List of major modes where `company-fish-shell' will be providing completions
 if it is part of `company-backends'. All modes not on this list will be ignored.
-Set value to nil to enable company-fish-shell regardless of current major-mode.")
+Set value to nil to enable company-fish-shell regardless of current major-mode."
+  :type 'list
+  :group 'company-shell)
 
-(defvar company-shell-use-help-arg nil
+(defcustom company-shell-use-help-arg nil
   "SETTING THIS TO t IS POTENTIALLY UNSAFE.
 
 If non-nil company-(fish)-shell will try and find a doc-string by running
@@ -82,7 +94,9 @@ $(which sh) --restricted) to further avoid any unwanted side effects.
 Despite these precautions company-shell will nonetheless need to sometimes run
 completely unknown binaries, which is why this option is turned off by default.
 You need to consciously enable it in the understanding that you do this AT
-YOUR OWN RISK.")
+YOUR OWN RISK."
+  :type 'boolean
+  :group 'company-shell)
 
 (defun company-shell--fetch-candidates ()
   (unless company-shell--cache (company-shell--build-cache))
