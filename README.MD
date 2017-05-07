@@ -1,7 +1,6 @@
-
 # Company Shell
 
-company mode completion backends for your shell functions:
+company mode completion backends for your shell scripting:
 
 ![](./screenshot.png)
 
@@ -9,10 +8,11 @@ company mode completion backends for your shell functions:
 
 ### Backends
 
-`company-shell` offers 2 backends for 2 different sources:
+`company-shell` offers 3 backends for 3 different sources:
 
 * `company-shell` - providing completions for binaries that are found on your `$PATH`
 * `company-fish-shell` - providing completions for fish-shell's functions, both builtin as well as user-defined
+* `company-shell-env` - providing completions for environment variables based on the `env` command
 
 ### Doc Strings
 
@@ -21,28 +21,35 @@ the output of `man c`. If *c* does not have a manpage it will then try the outpu
 to be enabled manually (see the section about `company-shell-use-help-arg`). The meta doc-string (shown in the
 minibuffer during completion) is provided by (the first line of) `whatis c`.
 
+There are no doc- or meta-strings for `company-shell-env`.
+
 ### Caching
 
 As the process of searching though the content of your `$PATH` and building the completion lists is likely
 to cause a visible delay it is done exactly once - when `company-shell` is invoked for the first time.
 The list of all possible completions will then be saved in the variable `company-shell--cache`.
-`company-fish-shell` follows the same pattern, its completions are stored in `company-shell--fish-cache`.
+`company-fish-shell` and `company-shell-env` follow the same pattern, their completions are stored in
+`company-shell--fish-cache` and `company-shell--env-cache` respectively.
 
-Both completion lists may be manually rebuilt by invoking `company-shell-rebuild-cache`.
+All caches may be manually rebuilt by invoking `company-shell-rebuild-cache`.
 
 ## Setup
 
-Add `company-(fish)-shell` to your `company-backends`:
+* Single backend
+
+Add e.g. `company--shell` to your `company-backends`:
 
 `(add-to-list 'company-backends 'company-shell)`
 
-To use both backends at once add them as a combined backend:
+* Multiple backends
 
-`(add-to-list 'company-backends '((company-shell company-fish-shell)))`
+To use multiple backends at once add them as a combined backend:
 
-To learn more about combining backends see the doc-string of `company-backends`.
+`(add-to-list 'company-backends '((company-shell company-shell-env company-fish-shell)))`
 
-## Configuration Variables:
+To learn more about (combining) backends see the doc-string of `company-backends`.
+
+## Configuration:
 
 * `company-shell-delete-duplicates` (default value: t)
 
@@ -53,8 +60,9 @@ For a change to this variable to take effect the cache needs to be rebuilt via `
 
 * `company-shell-modes` (default value: sh-mode fish-mode shell-mode eshell-mode)
 
-List of major modes where `company-shell` will be providing completions if it is part of `company-backends`.
-All modes not on this list will be ignored. Set value to nil to enable `company-shell` regardless of current major-mode.
+List of major modes where `company-shell` and `company-shell-env` will be providing completions if they are part of
+`company-backends`. All modes not on this list will be ignored. Set value to nil to enable `company-shell` regardless
+of current major-mode.
 
 * `company-fish-shell-modes` (default value: fish-mode shell-mode)
 

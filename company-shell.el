@@ -23,8 +23,8 @@
 
 ;;; Commentary:
 
-;; Backend for company mode to complete binaries found on your $PATH
-;; and fish shell functions.
+;; Backend for company mode to complete environment variables, binaries found
+;; on your $PATH and fish shell functions.
 
 ;;; Code:
 
@@ -47,6 +47,10 @@
 
 (defvar company-shell--fish-cache nil
   "Cache of all possible fish shell function completions. Automatically
+built when nil. Invoke `company-shell-rebuild-cache' to rebuild manually.")
+
+(defvar company-shell--env-cache nil
+  "Cache of all possible environment variable completions. Automatically
 built when nil. Invoke `company-shell-rebuild-cache' to rebuild manually.")
 
 (defcustom company-shell-delete-duplicates t
@@ -115,6 +119,10 @@ YOUR OWN RISK."
   (unless company-shell--fish-cache (company-shell--build-fish-cache))
   company-shell--fish-cache)
 
+(defun company-shell--fetch-env-candidates ()
+  (unless company-shell--env-cache (company-shell--build-env-cache))
+  company-shell--env-cache)
+
 (defun company-shell--build-cache ()
   (let ((completions (-mapcat
                       (lambda (dir)
@@ -140,6 +148,14 @@ YOUR OWN RISK."
                          (split-string "\n")
                          (sort #'string-lessp))
                      '("functions -a" "builtin -n"))))))
+
+(defun company-shell--build-env-cache ()
+  (setq company-shell--env-cache
+        (--map
+         (-> it (split-string "=") (car))
+         (-> "env"
+             (shell-command-to-string)
+             (split-string "\n")))))
 
 (defun company-shell--prefix (mode-list)
   (when (or (null mode-list)
@@ -178,7 +194,8 @@ YOUR OWN RISK."
   "Builds the cache of all completions found on the $PATH and all fish functions."
   (interactive)
   (company-shell--build-cache)
-  (company-shell--build-fish-cache))
+  (company-shell--build-fish-cache)
+  (company-shell--build-env-cache))
 
 ;;;###autoload
 (defun company-fish-shell (command &optional arg &rest ignored)
@@ -215,6 +232,24 @@ YOUR OWN RISK."
     (candidates  (cl-remove-if-not
                   (lambda (candidate) (string-prefix-p arg candidate))
                   (company-shell--fetch-candidates)))))
+
+;;;###autoload
+(defun company-shell-env (command &optional arg &rest ignored)
+  "Company backend for environment variables."
+  (interactive (list 'interactive))
+  (cl-case command
+    (interactive (company-begin-backend 'company-shell-env))
+    (prefix      (company-shell--prefix company-shell-modes))
+    (sorted      t)
+    (duplicates  nil)
+    (ignore-case nil)
+    (no-cache    nil)
+    (annotation  "Environment Variable")
+    (doc-buffer  nil)
+    (meta        nil)
+    (candidates  (cl-remove-if-not
+                  (lambda (candidate) (string-prefix-p arg candidate))
+                  (company-shell--fetch-env-candidates)))))
 
 (provide 'company-shell)
 ;;; company-shell.el ends here
