@@ -150,12 +150,13 @@ YOUR OWN RISK."
                      '("functions -a" "builtin -n"))))))
 
 (defun company-shell--build-env-cache ()
-  (setq company-shell--env-cache
-        (--map
-         (-> it (split-string "=") (car))
-         (-> "env"
-             (shell-command-to-string)
-             (split-string "\n")))))
+  (when (executable-find "env")
+    (setq company-shell--env-cache
+          (--map
+           (-> it (split-string "=") (car))
+           (-> "env"
+               (shell-command-to-string)
+               (split-string "\n"))))))
 
 (defun company-shell--prefix (mode-list)
   (when (or (null mode-list)
