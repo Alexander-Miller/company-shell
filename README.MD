@@ -45,7 +45,7 @@ Add e.g. `company--shell` to your `company-backends`:
 
 To use multiple backends at once add them as a combined backend:
 
-`(add-to-list 'company-backends '((company-shell company-shell-env company-fish-shell)))`
+`(add-to-list 'company-backends '(company-shell company-shell-env company-fish-shell))`
 
 To learn more about (combining) backends see the doc-string of `company-backends`.
 
