@@ -3,9 +3,9 @@
 ;; Copyright (C) 2017 Alexander Miller
 
 ;; Author: Alexander Miller <alexanderm@web.de>
-;; Package-Requires: ((company "0.8.12") (dash "2.12.0") (cl-lib "0.5"))
+;; Package-Requires: ((emacs "24.4") (company "0.8.12") (dash "2.12.0") (cl-lib "0.5"))
 ;; Homepage: https://github.com/Alexander-Miller/company-shell
-;; Version: 1.1
+;; Version: 1.2.1.
 ;; Keywords: company, shell, auto-completion
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -42,22 +42,25 @@
   :link '(url-link :tag "Repository" "https://github.com/Alexander-Miller/company-shell"))
 
 (defvar company-shell--cache nil
-  "Cache of all possible $PATH completions. Automatically built when nil.
- Invoke `company-shell-rebuild-cache' to rebuild manually.")
+  "Cache of all possible $PATH completions.
+Automatically built when nil. Invoke `company-shell-rebuild-cache' to rebuild
+manually.")
 
 (defvar company-shell--fish-cache nil
-  "Cache of all possible fish shell function completions. Automatically
-built when nil. Invoke `company-shell-rebuild-cache' to rebuild manually.")
+  "Cache of all possible fish shell function completions.
+Automatically built when nil. Invoke `company-shell-rebuild-cache' to rebuild
+manually.")
 
 (defvar company-shell--env-cache nil
-  "Cache of all possible environment variable completions. Automatically
-built when nil. Invoke `company-shell-rebuild-cache' to rebuild manually.")
+  "Cache of all possible environment variable completions.
+Automatically built when nil. Invoke `company-shell-rebuild-cache' to rebuild
+manually.")
 
 (defcustom company-shell-delete-duplicates t
-  "If non-nil the list of completions will be purged of duplicates. Duplicates
-in this context means any two string-equal entries, regardless where they have
-been found. This would prevent a completion candidate appearing twice because
-it is found in both /usr/bin/ and /usr/local/bin.
+  "If non-nil the list of completions will be purged of duplicates.
+Duplicates in this context means any two `string-equal' entries, regardless
+where they have been found. This would prevent a completion candidate appearing
+twice because it is found in both /usr/bin/ and /usr/local/bin.
 
 For a change to this variable to take effect the cache needs to be rebuilt
 via `company-shell-rebuild-cache'."
@@ -65,16 +68,17 @@ via `company-shell-rebuild-cache'."
   :group 'company-shell)
 
 (defcustom company-shell-modes '(sh-mode fish-mode shell-mode eshell-mode)
-  "List of major modes where `company-shell' will be providing completions if it
-is part of `company-backends'. All modes not on this list will be ignored. Set
-value to nil to enable company-shell regardless of current major-mode."
+  "Major modes `company-shell' and `company-shell-env' will complete for.
+Every mode not on this list will be ignored by `company-shell' and
+`company-shell-env'. Set value to nil to enable completion regardless of
+current major mode."
   :type 'list
   :group 'company-shell)
 
 (defcustom company-fish-shell-modes '(fish-mode shell-mode)
-  "List of major modes where `company-fish-shell' will be providing completions
-if it is part of `company-backends'. All modes not on this list will be ignored.
-Set value to nil to enable company-fish-shell regardless of current major-mode."
+  "Major modes `company-fish-shell' will complete for.
+Every mode not on this list will be ignored by `company-fish-shell'. Set value
+to nil to enable completion regardless of current major mode."
   :type 'list
   :group 'company-shell)
 
@@ -112,18 +116,25 @@ YOUR OWN RISK."
   :group 'company-shell)
 
 (defun company-shell--fetch-candidates ()
+  "Fetch the list of all shell completions.
+Build it if necessary."
   (unless company-shell--cache (company-shell--build-cache))
   company-shell--cache)
 
 (defun company-shell--fetch-fish-candidates ()
+  "Fetch the list of all fish shell completions.
+Build it if necessary."
   (unless company-shell--fish-cache (company-shell--build-fish-cache))
   company-shell--fish-cache)
 
 (defun company-shell--fetch-env-candidates ()
+  "Fetch the list of all shell env completions.
+Build it if necessary."
   (unless company-shell--env-cache (company-shell--build-env-cache))
   company-shell--env-cache)
 
 (defun company-shell--build-cache ()
+  "Build the list of all shell completions."
   (let ((completions (-mapcat
                       (lambda (dir)
                         (-map
@@ -139,6 +150,7 @@ YOUR OWN RISK."
                                 'string-lessp))))
 
 (defun company-shell--build-fish-cache ()
+  "Build the list of all fish shell completions."
   (when (executable-find "fish")
     (setq company-shell--fish-cache
           (-flatten (--map
@@ -150,6 +162,7 @@ YOUR OWN RISK."
                      '("functions -a" "builtin -n"))))))
 
 (defun company-shell--build-env-cache ()
+  "Build the list of all shell env completions."
   (when (executable-find "env")
     (setq company-shell--env-cache
           (--map
@@ -159,11 +172,14 @@ YOUR OWN RISK."
                (split-string "\n"))))))
 
 (defun company-shell--prefix (mode-list)
+  "Fetch the prefix to be completed for.
+Return nil if current major mode is not in MODE-LIST."
   (when (or (null mode-list)
             (-contains? mode-list major-mode))
     (company-grab-symbol)))
 
 (defun company-shell--doc-buffer (arg)
+  "Create a company doc buffer for ARG."
   (let* ((man-text (shell-command-to-string (format "man %s" arg)))
          (buf-text (if (or (null man-text)
                            (string= man-text "")
@@ -176,6 +192,8 @@ YOUR OWN RISK."
     doc-buf))
 
 (defun company-shell--help-page (arg)
+  "Try to find a help text for ARG.
+Should only be tried when ARG has no man page."
   (when company-shell-use-help-arg
     (shell-command-to-string
      (format "echo \"timeout 1 %s --help\" | %s --restricted"
@@ -183,6 +201,7 @@ YOUR OWN RISK."
              (string-trim (shell-command-to-string "which sh"))))))
 
 (defun company-shell--meta-string (arg)
+  "Fetch the meta string for ARG from running `whatis'."
   (-some-> (format "whatis %s" arg)
            (shell-command-to-string)
            (split-string "\n")
