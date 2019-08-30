@@ -30,7 +30,7 @@ Company mode completion backends for your shell scripting:
 
 To find the documentation for a completion candidate /c/ ~company-shell~ and ~company-fish-shell~ will both first try
 the output of ~man c~. If /c/ does not have a manpage they will then use ~c --help~ as a fallback. The latter needs
-to be enabled manually (see the desciption about ~company-shell-use-help-arg~ below). The meta doc-string (shown in the
+to be enabled manually (see the description about ~company-shell-use-help-arg~ below). The meta doc-string (shown in the
 minibuffer during completion) is provided by (the first line of) ~whatis c~.
 
 There are no doc- or meta-strings for ~company-shell-env~.
@@ -50,13 +50,21 @@ opened.
 * Setup
 
  * Single backend
-   Add e.g. ~company--shell~ to your ~company-backends~:
-   ~(add-to-list 'company-backends 'company-shell)~
+
+   Add e.g. ~company-shell~ to your ~company-backends~:
+
+   #+BEGIN_SRC emacs-lisp
+     (add-to-list 'company-backends 'company-shell)
+   #+END_SRC
 
  * Multiple backends
 
    To use multiple backends at once add them as a combined backend:
-   ~(add-to-list 'company-backends '(company-shell company-shell-env company-fish-shell))~
+
+   #+BEGIN_SRC emacs-lisp
+     (add-to-list 'company-backends '(company-shell company-shell-env company-fish-shell))
+   #+END_SRC
+
    To learn more about (combining) backends see the doc-string of ~company-backends~.
 
 * Configuration
