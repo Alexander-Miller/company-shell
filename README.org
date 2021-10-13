@@ -1,3 +1,5 @@
+# -*- fill-column: 120 org-list-indent-offset: 1 -*-
+
 #+STARTUP: noinlineimages
 
 #+TITLE: Company Shell
@@ -9,13 +11,14 @@ Company mode completion backends for your shell scripting:
 [[file:screenshot.png]]
 
 * Content                                                                            :TOC:noexport:
- - [[#features][Features]]
+- [[#features][Features]]
    - [[#backends][Backends]]
    - [[#doc-strings][Doc Strings]]
    - [[#caching][Caching]]
- - [[#setup][Setup]]
- - [[#configuration][Configuration]]
- - [[#dependencies][Dependencies]]
+- [[#setup][Setup]]
+- [[#configuration][Configuration]]
+   - [[#excessively-slow-meta-lookup][Excessively slow meta lookup]]
+- [[#dependencies][Dependencies]]
 
 * Features
 ** Backends
@@ -116,6 +119,12 @@ opened.
    Despite these precautions company-shell will nonetheless need to sometimes run completely unknown
    binaries, which is why this option is turned off by default. You need to consciously enable
    it in the understanding that you do this AT YOUR OWN RISK.
+
+** Excessively slow meta lookup
+
+company-shell uses the ~whatis~ shell command to look up ~meta~ strings for company-mode. In [[https://github.com/Alexander-Miller/company-shell/issues/15#issuecomment-940227128][some situations]] that may be
+extremely slow to the point of rendering company-shell unusable. When that happens you can set
+~company-shell-dont-fetch-meta~ to a non-nil value to prevent the lookup from happening.
 
 * Dependencies
  * company

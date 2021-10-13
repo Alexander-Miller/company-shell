@@ -91,6 +91,12 @@ with control characters (you'll know it when you see it)."
   :type 'boolean
   :group 'company-shell)
 
+(defcustom company-shell-dont-fetch-meta nil
+  "When non-nil company-shell will avoid fetching company's `meta' strings.
+Meta annotations are looked up via the `whatis' shell command, which might be
+excessively slow in some situations (like a missing database on MacOS). This
+option can be used in cases like that to avoid the delays.")
+
 (defcustom company-shell-use-help-arg nil
   "SETTING THIS TO t IS POTENTIALLY UNSAFE.
 
@@ -214,14 +220,15 @@ Should only be tried when ARG has no man page."
 (defun company-shell--meta-string (arg)
   "Fetch the cached meta string for ARG.
 If nothing is cached yet look it up using 'whatis'."
-  (let ((cached-meta (gethash arg company-shell--meta-cache)))
-    (pcase cached-meta
-      ('none nil)
-      ((pred null)
-       (let ((meta (company-shell--fetch-meta arg)))
-         (puthash arg (or meta 'none) company-shell--meta-cache)
-         meta))
-      (_ cached-meta))))
+  (unless company-shell-dont-fetch-meta
+    (let ((cached-meta (gethash arg company-shell--meta-cache)))
+      (pcase cached-meta
+        ('none nil)
+        ((pred null)
+         (let ((meta (company-shell--fetch-meta arg)))
+           (puthash arg (or meta 'none) company-shell--meta-cache)
+           meta))
+        (_ cached-meta)))))
 
 ;;;###autoload
 (defun company-shell-rebuild-cache ()
