@@ -56,6 +56,8 @@ manually.")
 Automatically built when nil. Invoke `company-shell-rebuild-cache' to rebuild
 manually.")
 
+(defvar company-shell--meta-cache (make-hash-table :size 5000 :test 'equal))
+
 (defcustom company-shell-delete-duplicates t
   "If non-nil the list of completions will be purged of duplicates.
 Duplicates in this context means any two `string-equal' entries, regardless
@@ -200,14 +202,26 @@ Should only be tried when ARG has no man page."
              arg
              (string-trim (shell-command-to-string "which sh"))))))
 
-(defun company-shell--meta-string (arg)
+(defun company-shell--fetch-meta (arg)
   "Fetch the meta string for ARG from running `whatis'."
   (-some-> (format "whatis %s" arg)
-           (shell-command-to-string)
-           (split-string "\n")
-           (cl-first)
-           (split-string " - ")
-           (cl-second)))
+    (shell-command-to-string)
+    (split-string "\n")
+    (cl-first)
+    (split-string " - ")
+    (cl-second)))
+
+(defun company-shell--meta-string (arg)
+  "Fetch the cached meta string for ARG.
+If nothing is cached yet look it up using 'whatis'."
+  (let ((cached-meta (gethash arg company-shell--meta-cache)))
+    (pcase cached-meta
+      ('none nil)
+      ((pred null)
+       (let ((meta (company-shell--fetch-meta arg)))
+         (puthash arg (or meta 'none) company-shell--meta-cache)
+         meta))
+      (_ cached-meta))))
 
 ;;;###autoload
 (defun company-shell-rebuild-cache ()
