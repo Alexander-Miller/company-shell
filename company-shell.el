@@ -43,17 +43,17 @@
 
 (defvar company-shell--cache nil
   "Cache of all possible $PATH completions.
-Automatically built when nil. Invoke `company-shell-rebuild-cache' to rebuild
+Automatically built when nil.  Invoke `company-shell-rebuild-cache' to rebuild
 manually.")
 
 (defvar company-shell--fish-cache nil
   "Cache of all possible fish shell function completions.
-Automatically built when nil. Invoke `company-shell-rebuild-cache' to rebuild
+Automatically built when nil.  Invoke `company-shell-rebuild-cache' to rebuild
 manually.")
 
 (defvar company-shell--env-cache nil
   "Cache of all possible environment variable completions.
-Automatically built when nil. Invoke `company-shell-rebuild-cache' to rebuild
+Automatically built when nil.  Invoke `company-shell-rebuild-cache' to rebuild
 manually.")
 
 (defvar company-shell--meta-cache (make-hash-table :size 5000 :test 'equal))
@@ -61,7 +61,7 @@ manually.")
 (defcustom company-shell-delete-duplicates t
   "If non-nil the list of completions will be purged of duplicates.
 Duplicates in this context means any two `string-equal' entries, regardless
-where they have been found. This would prevent a completion candidate appearing
+where they have been found.  This would prevent a completion candidate appearing
 twice because it is found in both /usr/bin/ and /usr/local/bin.
 
 For a change to this variable to take effect the cache needs to be rebuilt
@@ -72,14 +72,14 @@ via `company-shell-rebuild-cache'."
 (defcustom company-shell-modes '(sh-mode fish-mode shell-mode eshell-mode)
   "Major modes `company-shell' and `company-shell-env' will complete for.
 Every mode not on this list will be ignored by `company-shell' and
-`company-shell-env'. Set value to nil to enable completion regardless of
+`company-shell-env'.  Set value to nil to enable completion regardless of
 current major mode."
   :type 'list
   :group 'company-shell)
 
 (defcustom company-fish-shell-modes '(fish-mode shell-mode)
   "Major modes `company-fish-shell' will complete for.
-Every mode not on this list will be ignored by `company-fish-shell'. Set value
+Every mode not on this list will be ignored by `company-fish-shell'.  Set value
 to nil to enable completion regardless of current major mode."
   :type 'list
   :group 'company-shell)
@@ -94,32 +94,34 @@ with control characters (you'll know it when you see it)."
 (defcustom company-shell-dont-fetch-meta nil
   "When non-nil company-shell will avoid fetching company's `meta' strings.
 Meta annotations are looked up via the `whatis' shell command, which might be
-excessively slow in some situations (like a missing database on MacOS). This
-option can be used in cases like that to avoid the delays.")
+excessively slow in some situations (like a missing database on MacOS).  This
+option can be used in cases like that to avoid the delays."
+:type 'boolean
+:group 'company-shell)
 
 (defcustom company-shell-use-help-arg nil
   "SETTING THIS TO t IS POTENTIALLY UNSAFE.
 
-If non-nil company-(fish)-shell will try and find a doc-string by running
-`arg --help'if `man arg' did not produce any valid results. This is not
-completely safe since company-shell does not and can not know whether it is
-safe to run a command in this fashion. Some applications may simply ignore or
-misinterpret the command flag, with unpredictable results. Usually this just
-means that instead of any actual documentation you'll see an error message
-telling you the program doesn't know what to do with the --help arg or that
-it was started with invalid input. In rare cases a program may simple ignore
-the --help arg and directly spawn a GUI like xfce4-notes-settings does.
+If non-nil company-(fish)-shell will try and find a doc-string by running `arg
+--help'if `man arg' did not produce any valid results.  This is not completely
+safe since company-shell does not and can not know whether it is safe to run a
+command in this fashion.  Some applications may simply ignore or misinterpret
+the command flag, with unpredictable results.  Usually this just means that
+instead of any actual documentation you'll see an error message telling you the
+program doesn't know what to do with the --help arg or that it was started with
+invalid input.  In rare cases a program may simple ignore the --help arg and
+directly spawn a GUI like xfce4-notes-settings does.
 
 To mitigate any such issues company-shell will run the --help attempt on a timer
-of 1 second. This is more than enough to fetch the doc output if it is available,
-but will quickly close any process that may accidentally have been spawned. In
-addition the command will run in a restricted shell (found via
+of 1 second.  This is more than enough to fetch the doc output if it is
+available, but will quickly close any process that may accidentally have been
+spawned.  In addition the command will run in a restricted shell (found via
 $(which sh) --restricted) to further avoid any unwanted side effects.
 
 Despite these precautions company-shell will nonetheless need to sometimes run
 completely unknown binaries, which is why this option is turned off by default.
-You need to consciously enable it in the understanding that you do this AT
-YOUR OWN RISK."
+You need to consciously enable it in the understanding that you do this AT YOUR
+OWN RISK."
   :type 'boolean
   :group 'company-shell)
 
