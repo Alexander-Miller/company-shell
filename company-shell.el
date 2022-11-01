@@ -175,11 +175,10 @@ Build it if necessary."
 
 (defun company-shell--build-fish-cache ()
   "Build the list of all fish shell completions."
-  (when (executable-find "fish")
+  (when-let ((shell-file-name (executable-find "fish")))
     (setq company-shell--fish-cache
           (-flatten (--map
                      (-> it
-                         (format "fish -c \"%s\"")
                          (shell-command-to-string)
                          (split-string "\n")
                          (sort #'string-lessp))
