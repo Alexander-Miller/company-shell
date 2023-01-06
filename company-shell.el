@@ -1,11 +1,11 @@
 ;;; company-shell.el --- Company mode backend for shell functions
 
-;; Copyright (C) 2022 Alexander Miller
+;; Copyright (C) 2023 Alexander Miller
 
 ;; Author: Alexander Miller <alexanderm@web.de>
 ;; Package-Requires: ((emacs "24.4") (company "0.8.12") (dash "2.12.0") (cl-lib "0.5"))
 ;; Homepage: https://github.com/Alexander-Miller/company-shell
-;; Version: 1.3
+;; Version: 1.3.1
 ;; Keywords: company, shell, auto-completion
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -136,6 +136,11 @@ happened (if company-shell has already been used) then you need to manually call
   :type 'boolean
   :group 'company-shell)
 
+(defcustom company-shell-complete-in-comments t
+  "Indicates whether completions should be offered when point is in a comment."
+  :type 'boolean
+  :group 'company-shell)
+
 (defun company-shell--fetch-candidates ()
   "Fetch the list of all shell completions.
 Build it if necessary."
@@ -197,8 +202,13 @@ Build it if necessary."
 (defun company-shell--prefix (mode-list)
   "Fetch the prefix to be completed for.
 Return nil if current major mode is not in MODE-LIST."
-  (when (or (null mode-list)
-            (-contains? mode-list major-mode))
+  (when (and
+         (or (null mode-list)
+             (-contains? mode-list major-mode))
+         (or company-shell-complete-in-comments
+             (not (member (get-text-property (point) 'face)
+                          '(font-lock-comment-face
+                            font-lock-comment-delimiter-face)))))
     (company-grab-symbol)))
 
 (defun company-shell--doc-buffer (arg)

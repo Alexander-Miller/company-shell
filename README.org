@@ -120,6 +120,10 @@ opened.
    binaries, which is why this option is turned off by default. You need to consciously enable
    it in the understanding that you do this AT YOUR OWN RISK.
 
+ * ~company-shell-complete-in-comments~ (default value: t)
+
+   Indicates whether completions should be offered inside comments.
+
 ** Excessively slow meta lookup
 
 company-shell uses the ~whatis~ shell command to look up ~meta~ strings for company-mode. In [[https://github.com/Alexander-Miller/company-shell/issues/15#issuecomment-940227128][some situations]] that may be
